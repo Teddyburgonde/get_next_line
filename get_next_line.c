@@ -6,13 +6,13 @@
 /*   By: tebandam <tebandam@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/13 11:12:38 by tebandam          #+#    #+#             */
-/*   Updated: 2023/11/13 11:13:48 by tebandam         ###   ########.fr       */
+/*   Updated: 2023/11/13 11:32:48 by tebandam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <fcntl.h>
 #include <stdio.h>
-
+#define BUFF_SIZE 32
 
 int get_next_line(const int fd, char **line)
 
@@ -20,7 +20,7 @@ int get_next_line(const int fd, char **line)
 
 
 
-
+/*
 
 
 int main(void)
@@ -34,6 +34,4 @@ int main(void)
     return (0);
 }
 
-
-
-
+*/
