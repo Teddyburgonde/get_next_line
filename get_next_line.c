@@ -6,53 +6,171 @@
 /*   By: tebandam <tebandam@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/13 11:12:38 by tebandam          #+#    #+#             */
-/*   Updated: 2023/11/13 13:04:24 by tebandam         ###   ########.fr       */
+/*   Updated: 2023/11/14 20:58:45 by tebandam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <fcntl.h>
 #include <stdio.h>
 #include <unistd.h>
+#include <stdlib.h>
 
-#define BUFF_SIZE 5
+#define BUFFER_SIZE 1300000 // nombre de caractere lu 
 
-//int get_next_line(const int fd, char **line)
-//{
-    
-//}
-
-
-int main(void)
+size_t  ft_strlen(const char *str)
 {
-    int fd;
-    int stock;
-    char    buff[BUFF_SIZE];
+    size_t  i;
 
-    fd = open("example.txt", O_RDWR);        
-    stock = read(fd, buff, BUFF_SIZE);
-    while (stock > 0)
-    {
-        stock = read(fd, buff, BUFF_SIZE);
-        
-    }
-    printf("content: %s", buff);
-    close(fd);
-    return (0);
+    i = 0;
+    while (str[i])
+        i++;
+    return (i);
+}
+
+char	*ft_strdup(const char *s)
+{
+	char		*tab;
+	int			i;
+
+	i = 0;
+	tab = malloc(sizeof(char) * ft_strlen(s) + 1);
+	if (tab)
+	{
+		while (s[i])
+		{
+			tab[i] = s[i];
+			i++;
+		}
+		tab[i] = '\0';
+	}
+	return ((char *)tab);
+}
+
+char	*ft_substr(char const *s, unsigned int start, size_t len)
+{
+	size_t	i;
+	size_t	j;
+	char	*tab;
+
+	if (!s)
+		return (NULL);
+	if ((unsigned int)ft_strlen(s) < start)
+		return (ft_strdup(""));
+	j = ft_strlen(s + start);
+	if (j < len)
+		len = j;
+	tab = malloc(sizeof(char) * (len + 1));
+	if (!tab)
+		return (NULL);
+	i = 0;
+	while (i < len)
+	{
+		tab[i] = s[start + i];
+		i++;
+	}
+	tab[i] = '\0';
+	return (tab);
+}
+
+char	*ft_strjoin(char *s1, char *s2)
+{
+	char	*tab;
+	int		i;
+	int		j;
+
+	if (!s1 || !s2)
+		return (NULL);
+	i = 0;
+	j = 0;
+	tab = malloc(sizeof(char) * (ft_strlen(s1) + ft_strlen(s2) + 1));
+	if (!tab)
+		return (NULL);
+	while (s1[i])
+	{
+		tab[i] = s1[i];
+		i++;
+	}
+	while (s2[j])
+	{
+		tab[i] = s2[j];
+		i++;
+		j++;
+	}
+	tab[i] = '\0';
+	free(s1); // pour eviter les leaks
+    return (tab);
 }
 
 
-/*
 
-
-int main(void)
+char	*ft_strchr(const char *s, int c)
 {
-    int fd = open("example.txt", O_RDONLY);
-    char buffer[100];
-    size_t bytesRead = read(fd, buffer, sizeof(buffer));
-    (void)bytesRead;
-    printf("%s\n", buffer);
-    close(fd);
-    return (0);
+	int	i;
+
+	i = 0;
+	while (s[i] != '\0')
+	{
+		if (s[i] == (char)c)
+			return ((char *)(&s[i]));
+		i++; 
+	}
+	if (s[i] == (char)c)
+		return ((char *)(&s[i]));
+	return (NULL);
 }
 
-*/
+char	*change_stock(char *stock)
+{
+	char	*new_stock;
+	int		i;
+	int		j;
+	
+	if(!stock)
+		return (NULL);
+	i = 0;
+	j = ft_strlen(stock);    
+	while (stock[i] != '\n' && stock[i] != '\0')
+		i++;
+	i++;
+	new_stock = ft_substr(stock, i, j - i);
+	free(stock);		
+	return (new_stock);
+}
+
+char *get_next_line(int fd)
+{
+	char	*line;
+	char	buf[BUFFER_SIZE];
+	int		len;
+	static char *stock;
+	int	i;
+	
+	if (fd == -1 ||  BUFFER_SIZE <= 0)
+		return (NULL);
+	i = 0;
+	len = read(fd, buf, BUFFER_SIZE); // je lis dans fd , stock dans buf de la taille de Buffer_size
+	stock = ft_strdup(buf); // PROBLEME  
+	while (len > 0 && ft_strchr(stock, '\n') == NULL)
+	{
+		len = read(fd, buf, BUFFER_SIZE); //valeur de buf a changer car nouvelle lecture
+		stock = ft_strjoin(stock, buf);
+	}
+	while (stock[i] != '\n')
+		i++;
+	line = ft_substr(stock, 0, i);
+	printf("before : %s\n", stock);
+	stock = change_stock(stock);
+	printf("after : %s\n", stock);
+	return (line);
+}
+
+#include <stdio.h>
+
+int	main(void)
+{
+	
+	int fd = open("example.txt", O_RDONLY);
+	get_next_line(fd);
+//	printf("first line : %s\n", get_next_line(fd));	
+//	printf("second line : %s\n", get_next_line(fd));
+}
