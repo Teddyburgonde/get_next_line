@@ -6,13 +6,29 @@
 /*   By: tebandam <tebandam@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/13 11:12:38 by tebandam          #+#    #+#             */
-/*   Updated: 2023/11/15 13:43:58 by tebandam         ###   ########.fr       */
+/*   Updated: 2023/11/15 17:29:30 by tebandam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
+#include <stdio.h>
 
-#define BUFFER_SIZE  
+#define BUFFER_SIZE 70000
+
+void	*ft_memset(void *s, int c, size_t n)
+{
+	size_t			i;
+	char			*tab;
+
+	tab = s;
+	i = 0;
+	while (i < n)
+	{
+		tab[i] = c;
+		i++;
+	}
+	return (s);
+}
 
 char	*ft_strjoin(char *s1, char *s2)
 {
@@ -69,15 +85,17 @@ static char	*change_stock(char *stock)
 		return (NULL);
 	i = 0;
 	j = ft_strlen(stock);    
-	while (stock[i] != '\n' && stock[i] != '\0')
+	while (stock[i] && stock[i] != '\n')
 		i++;
+	if (stock[i] == '\0')
+		return (NULL);
 	i++;
 	new_stock = ft_substr(stock, i, j - i);
-	free(stock);		
+	free(stock);
 	return (new_stock);
 }
 
-char *get_next_line(int fd)
+/* char *get_next_line(int fd)
 {
 	char	*line;
 	char	buf[BUFFER_SIZE];
@@ -101,5 +119,45 @@ char *get_next_line(int fd)
 	//printf("before : %s\n", stock);
 	stock = change_stock(stock);
 	//printf("after : %s\n", stock);
+	return (line);
+} */
+
+
+
+
+char *get_next_line(int fd)
+{
+	char	*line;
+	char	*full_line;
+	char	buf[BUFFER_SIZE];
+	int		len;
+	static char *stock = NULL;
+	int	i;
+	
+	if (fd == -1 ||  BUFFER_SIZE <= 0)
+		return (NULL);
+	i = 0;
+	ft_memset(buf, 0, BUFFER_SIZE);
+	len = read(fd, buf, BUFFER_SIZE); // je lis dans fd , stock dans buf de la taille de Buffer_size
+	if (stock != NULL)
+		full_line = ft_strjoin(stock, buf);
+	else if (len > 0)
+		full_line = ft_strdup(buf);
+
+	while (len > 0 && ft_strchr(full_line, '\n') == NULL)
+	{
+		len = read(fd, buf, BUFFER_SIZE); //valeur de buf a changer car nouvelle lecture
+		if (len <= 0)
+			break ;
+		full_line = ft_strjoin(full_line, buf);
+	}
+	while (full_line[i] && full_line[i] != '\n')
+		i++;
+	line = ft_substr(full_line, 0, i + 1);
+
+
+	stock = change_stock(full_line);
+	// printf("|%s|\n", stock);
+
 	return (line);
 }

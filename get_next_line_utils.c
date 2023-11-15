@@ -1,8 +1,8 @@
 #include "get_next_line.h"
 
-size_t  ft_strlen(const char *str)
+int ft_strlen(const char *str)
 {
-    size_t  i;
+    int  i;
 
     i = 0;
     while (str[i])
@@ -29,10 +29,10 @@ char	*ft_strdup(const char *s)
 	return ((char *)tab);
 }
 
-char	*ft_substr(char const *s, unsigned int start, size_t len)
+char	*ft_substr(char const *s, unsigned int start, int len)
 {
-	size_t	i;
-	size_t	j;
+	int	i;
+	int	j;
 	char	*tab;
 
 	if (!s)
