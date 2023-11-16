@@ -6,7 +6,7 @@
 /*   By: tebandam <tebandam@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/16 08:08:58 by tebandam          #+#    #+#             */
-/*   Updated: 2023/11/16 09:35:07 by tebandam         ###   ########.fr       */
+/*   Updated: 2023/11/16 09:59:05 by tebandam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,6 +48,22 @@ char	*ft_strdup(const char *s)
 	return (NULL);
 }
 
+char	*ft_strchr(const char *s, int c)
+{
+	int	i;
+
+	i = 0;
+	while (s[i] != '\0')
+	{
+		if (s[i] == (char)c)
+			return ((char *)(&s[i]));
+		i++; 
+	}
+	if (s[i] == (char)c)
+		return ((char *)(&s[i]));
+	return (NULL);
+}
+
 //fonction qui lis un fichier et qui stock le contenu dans une variable
 // static 
 
@@ -65,11 +81,13 @@ char    *read_in_the_file(int fd)
     return (stock);
 }
 
+// ft_strchr(full_line, '\n')
 char    *extract_line(char *stock)
 {
     
 }
 
+/*
 //char *get_next_line(int fd)
 #include <stdio.h>
 int main(void)
@@ -82,3 +100,4 @@ int main(void)
     printf("%s", str);
     free(str);
 }
+*/
