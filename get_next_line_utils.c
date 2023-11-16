@@ -4,6 +4,8 @@ int ft_strlen(const char *str)
 {
     int  i;
 
+	if (!str)
+		return (0);
     i = 0;
     while (str[i])
         i++;
@@ -16,7 +18,7 @@ char	*ft_strdup(const char *s)
 	int			i;
 
 	i = 0;
-	tab = malloc(sizeof(char) * ft_strlen(s) + 1);
+	tab = malloc((sizeof(char) * ft_strlen(s)) + 1);
 	if (tab)
 	{
 		while (s[i])
@@ -25,15 +27,16 @@ char	*ft_strdup(const char *s)
 			i++;
 		}
 		tab[i] = '\0';
+		return (tab);
 	}
-	return ((char *)tab);
+	return (NULL);
 }
 
 char	*ft_substr(char const *s, unsigned int start, int len)
 {
 	int	i;
 	int	j;
-	char	*tab;
+	char	*tab= NULL;
 
 	if (!s)
 		return (NULL);

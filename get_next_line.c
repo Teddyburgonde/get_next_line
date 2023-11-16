@@ -6,14 +6,14 @@
 /*   By: tebandam <tebandam@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/13 11:12:38 by tebandam          #+#    #+#             */
-/*   Updated: 2023/11/15 17:29:30 by tebandam         ###   ########.fr       */
+/*   Updated: 2023/11/15 21:33:23 by tebandam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
 #include <stdio.h>
 
-#define BUFFER_SIZE 70000
+#define BUFFER_SIZE 42
 
 void	*ft_memset(void *s, int c, size_t n)
 {
@@ -56,6 +56,7 @@ char	*ft_strjoin(char *s1, char *s2)
 	}
 	tab[i] = '\0';
 	free(s1); // pour eviter les leaks
+	s1 = NULL;
     return (tab);
 }
 
@@ -81,17 +82,18 @@ static char	*change_stock(char *stock)
 	int		i;
 	int		j;
 	
-	if(!stock)
+	if (!stock)
 		return (NULL);
 	i = 0;
 	j = ft_strlen(stock);    
 	while (stock[i] && stock[i] != '\n')
 		i++;
-	if (stock[i] == '\0')
+	if (stock[i] != '\0')
 		return (NULL);
 	i++;
 	new_stock = ft_substr(stock, i, j - i);
 	free(stock);
+	stock = NULL;
 	return (new_stock);
 }
 
@@ -123,8 +125,6 @@ static char	*change_stock(char *stock)
 } */
 
 
-
-
 char *get_next_line(int fd)
 {
 	char	*line;
@@ -136,28 +136,77 @@ char *get_next_line(int fd)
 	
 	if (fd == -1 ||  BUFFER_SIZE <= 0)
 		return (NULL);
+	full_line = NULL;
 	i = 0;
 	ft_memset(buf, 0, BUFFER_SIZE);
 	len = read(fd, buf, BUFFER_SIZE); // je lis dans fd , stock dans buf de la taille de Buffer_size
 	if (stock != NULL)
 		full_line = ft_strjoin(stock, buf);
 	else if (len > 0)
-		full_line = ft_strdup(buf);
-
-	while (len > 0 && ft_strchr(full_line, '\n') == NULL)
 	{
+		buf[len] = '\0';
+		full_line = ft_strdup(buf);
+	}
+	if (!full_line)
+		return (NULL);
+	while (full_line && len > 0 && ft_strchr(full_line, '\n') == NULL)
+	{
+		ft_memset(buf, 0, BUFFER_SIZE);
 		len = read(fd, buf, BUFFER_SIZE); //valeur de buf a changer car nouvelle lecture
 		if (len <= 0)
 			break ;
 		full_line = ft_strjoin(full_line, buf);
 	}
-	while (full_line[i] && full_line[i] != '\n')
-		i++;
+	if (full_line){
+		while (full_line[i] && full_line[i] != '\n')
+			i++;
+	}
 	line = ft_substr(full_line, 0, i + 1);
-
-
 	stock = change_stock(full_line);
+	if (full_line){
+		free(full_line);
+		full_line = NULL;
+	}
+	
 	// printf("|%s|\n", stock);
-
 	return (line);
+}
+
+
+#include <stdio.h>
+int main(void)
+{	
+	char	*tab;
+	//int	i;
+	int fd;
+
+	//i = 0;
+	fd = open("example.txt", O_RDONLY);
+
+	//get_next_line(fd);
+	//get_next_line(fd);
+	//get_next_line(fd);
+	//get_next_line(fd);
+	//get_next_line(fd);
+	// printf("%s", get_next_line(fd));
+	// printf("%s", get_next_line(fd));
+	// printf("%s", get_next_line(fd));
+	tab = get_next_line(fd);
+	printf("%s", tab);
+	free(tab);
+	tab = get_next_line(fd);
+	printf("%s", tab);
+	free(tab);
+	tab = get_next_line(fd);
+	printf("%s", tab);
+	free(tab);
+	tab = get_next_line(fd);
+	printf("%s", tab);
+	free(tab);
+	tab = get_next_line(fd);
+	printf("%s", tab);
+	//printf("%s", tab);
+	// if (tab)
+		// free(tab);
+	return (0);
 }
