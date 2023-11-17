@@ -1,9 +1,9 @@
 #include "get_next_line.h"
 #include <stdio.h>
 
-//#ifndef BUFFER_SIZE 
-//# define BUFFER_SIZE 6
-//#endif
+/*  #ifndef BUFFER_SIZE 
+# define BUFFER_SIZE 42
+#endif */
 
 char	*ft_strjoin(char *s1, char *s2)
 {
@@ -35,27 +35,37 @@ char	*ft_strjoin(char *s1, char *s2)
     return (tab);
 }
 
-char *read_line(int fd, char *prev_read)
+char *read_line(int fd, char *stock)
 {
     int 	len;
-    char    *buf = calloc(BUFFER_SIZE + 1, 1); // TODO 
-    char    *stock;
+    char    *buf;
 
-	// verif il y a rien dans stock
-
-    len = 1;
-    if (prev_read)
+	len = 1;
+	buf = NULL;
+	if (stock != NULL)
 	{
-		stock = ft_strdup(prev_read);
-		free(prev_read);
-	}	
+		buf = calloc(sizeof(char), BUFFER_SIZE + 1);
+		len = read(fd, buf, BUFFER_SIZE);
+		if (len > 0)
+			stock = ft_strjoin(stock, buf);
+		free(buf);
+		buf = NULL;
+	}
 	else
-		stock = calloc(1,1);
+		stock = calloc(1, 1);
     while (len > 0 && ft_strchr(stock, '\n') == NULL)
     {
+		buf = calloc(sizeof(char), BUFFER_SIZE + 1);
         len = read(fd, buf, BUFFER_SIZE);
-		// buf[len] = 0;
-        stock = ft_strjoin(stock, buf);
+		if (len == -1 || (len == 0 && stock[0] == '\0'))
+		{
+			free(buf);
+			free(stock);
+			return (NULL);
+		}
+		stock = ft_strjoin(stock, buf);
+		free(buf);
+		buf = NULL;
     }
 	free(buf);
     return (stock);
@@ -66,11 +76,13 @@ char	*extract_line(char *stock)
 	int		i;
 	char	*line = NULL;
 
+	if (stock == NULL)
+		return (NULL);
 	i = 0;
 	while (stock[i] && stock[i] != '\n')
 		i++;
-	if (!i)
-		return ( ft_strdup("\n") );
+	if (stock[i] == '\n')
+		i++;
 	line = ft_substr(stock, 0, i);
 	return (line);
 }
@@ -81,11 +93,19 @@ char	*extract_surplus_line(char *stock)
 	int	j;
 	char	*new_stock;
 
+	if (stock == NULL)
+		return (NULL);
 	i = 0;
 	while (stock[i] && stock[i] != '\n')
 		i++;
-	i++;
+	if (stock[i] == '\n')
+		i++;
 	j = ft_strlen(stock);
+	if (i == j)
+	{
+		free(stock);
+		return (NULL);
+	}
 	new_stock = ft_substr(stock, i, j);
 	free(stock);
 	return (new_stock);
@@ -95,43 +115,34 @@ char *get_next_line(int fd)
 {
     static char *stock = NULL;
 	char	*line;
-    
-	if (fd < 0) 
+
+	if (fd < 0 || BUFFER_SIZE <= 0) 
 	    return (NULL);
-	if (BUFFER_SIZE <= 0)
-		return (NULL);
     stock = read_line(fd, stock);
 	line = extract_line(stock);
-	if (!*line)
-	{
-		free(line);
-		return (NULL);
-	}
 	stock = extract_surplus_line(stock);
-	if (*stock == '\0' && *line == '\0')
-	{	
-		free(stock);
-		stock = NULL;
-		free(line);
-		line = NULL;
-		return (NULL);
-	}
 	return (line);
 }
 
-/*
-#include <stdio.h>
+
+/* #include <stdio.h>
 int main(void)
 {
     int fd;
     static char    *str;
+	int i;
 
+	i = 0;
     fd = open("example.txt", O_RDONLY);
-    while ((str = get_next_line(fd)))
-	{	
-    	printf("%s\n", str);
+	while (1)
+	{
+		str = get_next_line(fd);
+		if (str)
+			printf("%s", str);
+		if (str == NULL)
+			return (0);
 		free(str);
 	}
 	close(fd);
 }
-*/
+ */
