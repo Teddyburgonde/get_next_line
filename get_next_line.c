@@ -1,5 +1,8 @@
 #include "get_next_line.h"
-#define BUFFER_SIZE 6
+
+//#ifndef BUFFER_SIZE 
+//# define BUFFER_SIZE 6
+//#endif
 
 char	*ft_strjoin(char *s1, char *s2)
 {
@@ -33,8 +36,8 @@ char	*ft_strjoin(char *s1, char *s2)
 
 char *read_line(int fd, char *prev_read)
 {
-    int len;
-    char    buf[BUFFER_SIZE];
+    int 	len;
+    char    *buf = calloc(BUFFER_SIZE + 1, 1); // TODO 
     char    *stock;
 
 	// verif il y a rien dans stock
@@ -46,12 +49,14 @@ char *read_line(int fd, char *prev_read)
 		free(prev_read);
 	}	
 	else
-		stock = ft_strdup("");
+		stock = calloc(1,1);
     while (len > 0 && ft_strchr(stock, '\n') == NULL)
     {
         len = read(fd, buf, BUFFER_SIZE);
+		// buf[len] = 0;
         stock = ft_strjoin(stock, buf);
     }
+	free(buf);
     return (stock);
 }
 
@@ -61,7 +66,7 @@ char	*extract_line(char *stock)
 	char	*line;
 
 	i = 0;
-	while (stock[i] != '\n')
+	while (stock[i] && stock[i] != '\n')
 		i++;
 	line = ft_substr(stock, 0, i);
 	return (line);
@@ -74,7 +79,7 @@ char	*extract_surplus_line(char *stock)
 	char	*new_stock;
 
 	i = 0;
-	while (stock[i] != '\n')
+	while (stock[i] && stock[i] != '\n')
 		i++;
 	i++;
 	j = ft_strlen(stock);
@@ -85,29 +90,40 @@ char	*extract_surplus_line(char *stock)
 
 char *get_next_line(int fd)
 {
-    static char *stock;
+    static char *stock = NULL;
 	char	*line;
     
-	if (fd == -1 || BUFFER_SIZE <= 0) 
+	if (fd < 0) 
 	    return (NULL);
+	if (BUFFER_SIZE <= 0)
+		return (NULL);
     stock = read_line(fd, stock);
 	line = extract_line(stock);
 	stock = extract_surplus_line(stock);
+	if (*stock == '\0' && *line == '\0')
+	{	
+		free(stock);
+		stock = NULL;
+		free(line);
+		line = NULL;
+		return (NULL);
+	}
 	return (line);
 }
 
+/*
 #include <stdio.h>
 int main(void)
 {
     int fd;
     static char    *str;
-    
-    fd = open("example.txt", O_RDONLY);
-    do{
-		str = get_next_line(fd);
-    	printf("%s", str);
 
+    fd = open("example.txt", O_RDONLY);
+    while ((str = get_next_line(fd)))
+	{	
+    	printf("%s\n", str);
+		free(str);
 	}
-	free(str);
 	close(fd);
 }
+*/
