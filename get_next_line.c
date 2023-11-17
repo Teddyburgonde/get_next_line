@@ -1,4 +1,5 @@
 #include "get_next_line.h"
+#include <stdio.h>
 
 //#ifndef BUFFER_SIZE 
 //# define BUFFER_SIZE 6
@@ -62,12 +63,14 @@ char *read_line(int fd, char *prev_read)
 
 char	*extract_line(char *stock)
 {
-	int	i;
-	char	*line;
+	int		i;
+	char	*line = NULL;
 
 	i = 0;
 	while (stock[i] && stock[i] != '\n')
 		i++;
+	if (!i)
+		return ( ft_strdup("\n") );
 	line = ft_substr(stock, 0, i);
 	return (line);
 }
@@ -99,6 +102,11 @@ char *get_next_line(int fd)
 		return (NULL);
     stock = read_line(fd, stock);
 	line = extract_line(stock);
+	if (!*line)
+	{
+		free(line);
+		return (NULL);
+	}
 	stock = extract_surplus_line(stock);
 	if (*stock == '\0' && *line == '\0')
 	{	
