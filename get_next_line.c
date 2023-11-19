@@ -5,6 +5,22 @@
 # define BUFFER_SIZE 42
 #endif */
 
+char *read_loop(char *buf, char *stock, int *len, int fd)
+{
+	buf = calloc(sizeof(char), BUFFER_SIZE + 1);
+	*len = read(fd, buf, BUFFER_SIZE);
+	if (*len == -1 || (*len == 0 && stock[0] == '\0'))
+	{
+		free(buf);
+		free(stock);
+		return (NULL);
+	}
+	stock = ft_strjoin(stock, buf);
+	free(buf);
+	buf = NULL;
+	return (stock);
+}
+
 char	*ft_strjoin(char *s1, char *s2)
 {
 	char	*tab;
@@ -55,17 +71,18 @@ char *read_line(int fd, char *stock)
 		stock = calloc(1, 1);
     while (len > 0 && ft_strchr(stock, '\n') == NULL)
     {
-		buf = calloc(sizeof(char), BUFFER_SIZE + 1);
-        len = read(fd, buf, BUFFER_SIZE);
-		if (len == -1 || (len == 0 && stock[0] == '\0'))
-		{
-			free(buf);
-			free(stock);
-			return (NULL);
-		}
-		stock = ft_strjoin(stock, buf);
-		free(buf);
-		buf = NULL;
+		// buf = calloc(sizeof(char), BUFFER_SIZE + 1);
+        // len = read(fd, buf, BUFFER_SIZE);
+		// if (len == -1 || (len == 0 && stock[0] == '\0'))
+		// {
+		// 	free(buf);
+		// 	free(stock);
+		// 	return (NULL);
+		// }
+		// stock = ft_strjoin(stock, buf);
+		// free(buf);
+		// buf = NULL;
+		stock = read_loop(buf, stock, &len, fd);
     }
 	free(buf);
     return (stock);
