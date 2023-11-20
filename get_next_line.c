@@ -7,7 +7,7 @@
 
 char *read_loop(char *buf, char *stock, int *len, int fd)
 {
-	buf = calloc(sizeof(char), BUFFER_SIZE + 1);
+	buf = malloc(sizeof(char) * BUFFER_SIZE + 1);
 	*len = read(fd, buf, BUFFER_SIZE);
 	if (*len == -1 || (*len == 0 && stock[0] == '\0'))
 	{
@@ -15,6 +15,7 @@ char *read_loop(char *buf, char *stock, int *len, int fd)
 		free(stock);
 		return (NULL);
 	}
+	buf[*len] = 0;
 	stock = ft_strjoin(stock, buf);
 	free(buf);
 	buf = NULL;
@@ -60,15 +61,20 @@ char *read_line(int fd, char *stock)
 	buf = NULL;
 	if (stock != NULL)
 	{
-		buf = calloc(sizeof(char), BUFFER_SIZE + 1);
+		buf = malloc(sizeof(char) * BUFFER_SIZE + 1);
 		len = read(fd, buf, BUFFER_SIZE);
+		buf[len] = 0;
 		if (len > 0)
 			stock = ft_strjoin(stock, buf);
 		free(buf);
 		buf = NULL;
 	}
 	else
-		stock = calloc(1, 1);
+	{
+		stock = malloc(sizeof(char));
+		stock[0] = 0;
+	}
+		//calloc(1, 1);
     while (len > 0 && ft_strchr(stock, '\n') == NULL)
     {
 		// buf = calloc(sizeof(char), BUFFER_SIZE + 1);

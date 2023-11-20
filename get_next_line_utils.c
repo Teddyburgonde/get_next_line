@@ -28,27 +28,6 @@ char	*ft_strchr(const char *s, int c)
 	return (NULL);
 }
 
-char	*ft_strdup(const char *s)
-{
-	char		*tab;
-	int			i;
-
-	if (!s)
-		return (NULL);
-	i = 0;
-	tab = malloc(sizeof(char) * (ft_strlen(s) + 1));
-	if (tab)
-	{
-		while (s[i])
-		{
-			tab[i] = s[i];
-			i++;
-		}
-		tab[i] = '\0';
-	}
-	return ((char *)tab);
-}
-
 char	*ft_substr(char const *s, unsigned int start, int len)
 {
 	int	i;
@@ -58,7 +37,7 @@ char	*ft_substr(char const *s, unsigned int start, int len)
 	if (!s)
 		return (NULL);
 	if ((unsigned int)ft_strlen(s) < start)
-		return (ft_strdup(""));
+		return (NULL);
 	j = ft_strlen(s + start);
 	if (j < len)
 		len = j;
