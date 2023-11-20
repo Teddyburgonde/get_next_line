@@ -1,11 +1,18 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   get_next_line.c                                    :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: tebandam <tebandam@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2023/11/20 17:27:00 by tebandam          #+#    #+#             */
+/*   Updated: 2023/11/20 18:04:21 by tebandam         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "get_next_line.h"
-#include <stdio.h>
 
-/*  #ifndef BUFFER_SIZE 
-# define BUFFER_SIZE 42
-#endif */
-
-char *read_loop(char *buf, char *stock, int *len, int fd)
+static char	*read_loop(char *buf, char *stock, int *len, int fd)
 {
 	buf = malloc(sizeof(char) * BUFFER_SIZE + 1);
 	*len = read(fd, buf, BUFFER_SIZE);
@@ -22,40 +29,10 @@ char *read_loop(char *buf, char *stock, int *len, int fd)
 	return (stock);
 }
 
-char	*ft_strjoin(char *s1, char *s2)
+static char	*read_line(int fd, char *stock)
 {
-	char	*tab;
-	int		i;
-	int		j;
-
-	if (!s1 || !s2)
-		return (NULL);
-	i = 0;
-	j = 0;
-	tab = malloc(sizeof(char) * (ft_strlen(s1) + ft_strlen(s2) + 1));
-	if (!tab)
-		return (NULL);
-	while (s1[i])
-	{
-		tab[i] = s1[i];
-		i++;
-	}
-	while (s2[j])
-	{
-		tab[i] = s2[j];
-		i++;
-		j++;
-	}
-	tab[i] = '\0';
-	free(s1);
-	s1 = NULL;
-    return (tab);
-}
-
-char *read_line(int fd, char *stock)
-{
-    int 	len;
-    char    *buf;
+	char	*buf;
+	int		len;
 
 	len = 1;
 	buf = NULL;
@@ -74,31 +51,18 @@ char *read_line(int fd, char *stock)
 		stock = malloc(sizeof(char));
 		stock[0] = 0;
 	}
-		//calloc(1, 1);
-    while (len > 0 && ft_strchr(stock, '\n') == NULL)
-    {
-		// buf = calloc(sizeof(char), BUFFER_SIZE + 1);
-        // len = read(fd, buf, BUFFER_SIZE);
-		// if (len == -1 || (len == 0 && stock[0] == '\0'))
-		// {
-		// 	free(buf);
-		// 	free(stock);
-		// 	return (NULL);
-		// }
-		// stock = ft_strjoin(stock, buf);
-		// free(buf);
-		// buf = NULL;
+	while (len > 0 && ft_strchr(stock, '\n') == NULL)
 		stock = read_loop(buf, stock, &len, fd);
-    }
 	free(buf);
-    return (stock);
+	return (stock);
 }
 
-char	*extract_line(char *stock)
+static char	*extract_line(char *stock)
 {
 	int		i;
-	char	*line = NULL;
+	char	*line;
 
+	line = NULL;
 	if (stock == NULL)
 		return (NULL);
 	i = 0;
@@ -110,10 +74,10 @@ char	*extract_line(char *stock)
 	return (line);
 }
 
-char	*extract_surplus_line(char *stock)
+static char	*extract_surplus_line(char *stock)
 {
-	int	i;
-	int	j;
+	int		i;
+	int		j;
 	char	*new_stock;
 
 	if (stock == NULL)
@@ -134,38 +98,15 @@ char	*extract_surplus_line(char *stock)
 	return (new_stock);
 }
 
-char *get_next_line(int fd)
+char	*get_next_line(int fd)
 {
-    static char *stock = NULL;
-	char	*line;
+	static char	*stock = NULL;
+	char		*line;
 
-	if (fd < 0 || BUFFER_SIZE <= 0) 
-	    return (NULL);
-    stock = read_line(fd, stock);
+	if (fd < 0 || BUFFER_SIZE <= 0)
+		return (NULL);
+	stock = read_line(fd, stock);
 	line = extract_line(stock);
 	stock = extract_surplus_line(stock);
 	return (line);
 }
-
-
-/* #include <stdio.h>
-int main(void)
-{
-    int fd;
-    static char    *str;
-	int i;
-
-	i = 0;
-    fd = open("example.txt", O_RDONLY);
-	while (1)
-	{
-		str = get_next_line(fd);
-		if (str)
-			printf("%s", str);
-		if (str == NULL)
-			return (0);
-		free(str);
-	}
-	close(fd);
-}
- */
