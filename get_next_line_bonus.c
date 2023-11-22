@@ -6,7 +6,7 @@
 /*   By: tebandam <tebandam@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/20 18:20:54 by tebandam          #+#    #+#             */
-/*   Updated: 2023/11/20 18:49:38 by tebandam         ###   ########.fr       */
+/*   Updated: 2023/11/22 08:20:48 by tebandam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -105,7 +105,6 @@ char	*get_next_line(int fd)
 
 	if (fd < 0 || BUFFER_SIZE <= 0)
 		return (NULL);
-	
 	stock[fd] = read_line(fd, stock[fd]);
 	line = extract_line(stock[fd]);
 	stock[fd] = extract_surplus_line(stock[fd]);

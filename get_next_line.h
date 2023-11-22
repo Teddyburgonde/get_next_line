@@ -6,14 +6,17 @@
 /*   By: tebandam <tebandam@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/11/20 17:40:15 by tebandam          #+#    #+#             */
-/*   Updated: 2023/11/20 17:46:05 by tebandam         ###   ########.fr       */
+/*   Updated: 2023/11/22 18:39:28 by tebandam         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef GET_NEXT_LINE_H
 # define GET_NEXT_LINE_H 
 
-# include <fcntl.h>
+# ifndef BUFFER_SIZE
+#  define BUFFER_SIZE 5
+# endif
+
 # include <unistd.h>
 # include <stdlib.h>
 
